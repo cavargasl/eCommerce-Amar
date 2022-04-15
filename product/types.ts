@@ -3,7 +3,9 @@ export interface Product {
   title: string,
   category: string,
   description: string,
-  image: string,
+  image: string[],
   price: number,
-  offert: number
+  tag: string,
+  offert: number,
+  verticalImage: boolean,
 }
