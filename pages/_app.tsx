@@ -1,20 +1,20 @@
-import { ChakraProvider, extendTheme } from '@chakra-ui/react'
+import { ChakraProvider, Container } from '@chakra-ui/react'
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
+import theme from '../theme'
 
-const colors = {
-  brand: {
-    900: '#1a365d',
-    800: '#153e75',
-    700: '#2a69ac',
-  },
-}
-const theme = extendTheme({ colors })
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
-      <Component {...pageProps} />
+      <Container
+        marginY={4}
+        padding={4}
+        maxWidth="container.xl"
+        borderRadius="md"
+      >
+        <Component {...pageProps} />
+      </Container>
     </ChakraProvider>
   )
 }
