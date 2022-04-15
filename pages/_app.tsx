@@ -2,20 +2,23 @@ import { ChakraProvider, Container } from '@chakra-ui/react'
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import theme from '../theme'
+import Head from 'next/head'
 
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ChakraProvider theme={theme}>
-      <Container
-        marginY={4}
-        padding={4}
-        maxWidth="container.xl"
-        borderRadius="md"
-      >
+    <>
+      <Head>
+        <title>AMAR - SHOP</title>
+        <meta content="initial-scale=1.0, width=device-width" name="viewport" />
+        {/* Inicio de meta tags de licencia - Cambiar el contenido de los mismos viola el contenido de los terminos de licencia */}
+        <meta content="Camilo" name="author" />
+        <meta content="Camilo Vargas" name="copyright" />
+      </Head>
+      <ChakraProvider theme={theme}>
         <Component {...pageProps} />
-      </Container>
-    </ChakraProvider>
+      </ChakraProvider>
+    </>
   )
 }
 
