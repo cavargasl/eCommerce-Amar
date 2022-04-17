@@ -1,3 +1,4 @@
+import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import {
   Button, Grid, GridItem, Text, Link, Image, Stack, Heading, Container, Stat, StatNumber, Flex, Badge, Drawer,
   DrawerBody,
@@ -9,7 +10,6 @@ import {
   List,
   ListItem,
   HStack,
-  Box,
   VStack,
   CloseButton,
 } from '@chakra-ui/react';
@@ -42,7 +42,7 @@ const Home: NextPage<Props> = ({ products }) => {
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false)
 
   const total = useMemo(() => {
-    return parseCurrency(cart.reduce((total, product) => total + product.price, 0))
+    return parseCurrency(cart.reduce((total, product) => total + (product.price * product.quuantity), 0))
   }, [cart])
   const text = useMemo(() => {
     return cart.reduce((message, product) => message.concat(`* ${product.title} - ${parseCurrency(product.price)}\n`), "").concat(`\nTotal: ${total}`)
@@ -51,12 +51,24 @@ const Home: NextPage<Props> = ({ products }) => {
   function handleRemoveFromCart(index: number): void {
     setCart((cart) => cart.filter((_, _index) => _index != index))
   }
-  function handleAddToCart(product: Product): void {
+
+  function handleEditCart(product: Product, action: 'increment' | 'decrement'): void {
     setCart(cart => {
-      if (cart.some(item => item.id === product.id)) {
-        return cart.map(item => item.id === product.id ? { ...item, quuantity: item.quuantity + 1 } : item)
-      }
-      return cart.concat({ ...product, quuantity: 1 })
+      const isInCart = cart.some(item => item.id === product.id)
+      if(!isInCart) return cart.concat({ ...product, quuantity: 1 })
+
+      return cart.reduce((acc: Array<CartItem>, _product: CartItem) => {
+        if(product.id === _product.id) {
+          if(action === 'decrement'){
+            if(_product.quuantity === 1) return acc.concat(_product);
+            return acc.concat({..._product, quuantity: _product.quuantity - 1});
+          }
+          if(action === 'increment'){
+            return acc.concat({..._product, quuantity: _product.quuantity + 1});
+          }
+        }
+        return acc.concat(_product)
+      }, [])
     })
   }
 
@@ -100,7 +112,7 @@ const Home: NextPage<Props> = ({ products }) => {
                       borderRadius={"lg"}
                       width={"min-content"}
                       colorScheme={"primary"}
-                      onClick={() => handleAddToCart(product)}
+                      onClick={() => handleEditCart(product, 'increment')}
                     >
                       Añadir a la bolsa
                     </Button>
@@ -124,7 +136,7 @@ const Home: NextPage<Props> = ({ products }) => {
                     Ver pedido
                   </Text>
                   <Badge padding={1} colorScheme='primary' fontSize={".8rem"}>
-                    {cart.length} productos
+                    {cart.reduce((acc, product) => acc + product.quuantity ,0)} productos
                   </Badge>
                 </Stack>
               </Stack>
@@ -143,7 +155,7 @@ const Home: NextPage<Props> = ({ products }) => {
             <DrawerCloseButton />
             <DrawerHeader boxShadow={"base"}>Tu pedido</DrawerHeader>
 
-            <DrawerBody>
+            <DrawerBody mt={4}>
               <List spacing={4}>
                 {cart.map((product, index) =>
                   <ListItem key={product.id}>
@@ -169,6 +181,11 @@ const Home: NextPage<Props> = ({ products }) => {
                           <Stat size={"sm"} >
                             <StatNumber>{parseCurrency(product.price)}</StatNumber>
                           </Stat>
+                          <HStack>
+                            <Button size={"xs"} colorScheme="primary" variant={"outline"} disabled={product.quuantity === 1} onClick={() => handleEditCart(product, "decrement")}><MinusIcon w={3} /></Button>
+                            <Text paddingInline={2} fontWeight="bold" fontSize={"lg"} color="primary.500">{product.quuantity.toString().padStart(2, "0")}</Text>
+                            <Button size={"xs"} colorScheme="primary" onClick={() => handleEditCart(product, "increment")}><AddIcon w={3} /></Button>
+                          </HStack>
                         </HStack>
 
                       </VStack>
@@ -206,7 +223,7 @@ export const getStaticProps: GetStaticProps = async () => {
     props: {
       products
     },
-    // revalida la informacion de los productos en segundos
+    // revalida la informacion de los productos del excel en segundos
     revalidate: 604800
   }
 }
