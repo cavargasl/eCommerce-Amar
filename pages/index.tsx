@@ -12,6 +12,7 @@ import {
   HStack,
   VStack,
   CloseButton,
+  StackDivider,
 } from '@chakra-ui/react';
 import type { GetStaticProps, NextPage } from 'next'
 import { useMemo, useState } from 'react';
@@ -104,13 +105,13 @@ const Home: NextPage<Props> = ({ products }) => {
                   />
                   <Heading size={"md"} isTruncated textTransform={"capitalize"} >{product.title}</Heading>
                   <Stack direction={["column", "row"]} spacing={2} justifyContent="space-between" alignItems="center">
-                    <Stat size={"sm"} >
+                    <Stat size={"sm"} width={{base: "100%", sm: "min-content" }} >
                       <StatNumber>{parseCurrency(product.price)}</StatNumber>
                     </Stat>
                     <Button
                       variant={"outline"}
                       borderRadius={"lg"}
-                      width={"min-content"}
+                      width={{base: "100%", sm: "min-content"}}
                       colorScheme={"primary"}
                       onClick={() => handleEditCart(product, 'increment')}
                     >
@@ -122,7 +123,7 @@ const Home: NextPage<Props> = ({ products }) => {
           })}
         </Grid>
         {Boolean(cart.length) &&
-          <Flex alignItems="center" bottom={4} justifyContent="center" position="sticky">
+          <Flex alignItems="center" bottom={4} mt={6} justifyContent="center" position="sticky">
             <Button
               boxShadow="xl"
               colorScheme="primary"
@@ -153,14 +154,13 @@ const Home: NextPage<Props> = ({ products }) => {
           <DrawerOverlay />
           <DrawerContent backgroundColor={"primary.50"}>
             <DrawerCloseButton />
-            <DrawerHeader boxShadow={"base"}>Tu pedido</DrawerHeader>
+            <DrawerHeader boxShadow={"base"} >Tu pedido</DrawerHeader>
 
             <DrawerBody mt={4}>
-              <List spacing={4}>
+              <Stack divider={<StackDivider borderColor='primary.100' />} spacing={6}>
                 {cart.map((product, index) =>
-                  <ListItem key={product.id}>
-                    <HStack spacing={6} justifyContent="space-between">
-                      <Stack height={"70px"} width="100px" justifyContent="center">
+                  <Stack key={product.id} direction={['column', 'row']} spacing={4} justifyContent="space-between">
+                      <Stack height={"70px"} width={{base: "100%", sm: "100px"}} justifyContent="center">
                         <Image
                           objectFit={"cover"}
                           borderRadius={"lg"}
@@ -170,7 +170,7 @@ const Home: NextPage<Props> = ({ products }) => {
                           height={"100%"}
                         />
                       </Stack>
-                      <VStack width={"100%"}>
+                      <VStack width={"100%"} >
 
                         <HStack width={"100%"} justifyContent={"space-between"}>
                           <Heading size={"sm"} textTransform="capitalize" >{product.title}</Heading>
@@ -187,12 +187,10 @@ const Home: NextPage<Props> = ({ products }) => {
                             <Button size={"xs"} colorScheme="primary" onClick={() => handleEditCart(product, "increment")}><AddIcon w={3} /></Button>
                           </HStack>
                         </HStack>
-
                       </VStack>
-                    </HStack>
-                  </ListItem>
+                  </Stack>
                 )}
-              </List>
+              </Stack>
             </DrawerBody>
 
             <DrawerFooter >
@@ -205,7 +203,7 @@ const Home: NextPage<Props> = ({ products }) => {
                 colorScheme={"whatsapp"}
                 leftIcon={<Image src='https://icongr.am/fontawesome/whatsapp.svg?size=24&color=ffffff' alt='whatsapp_icon' />}
               >
-                Completar pedido {total}
+                <Text isTruncated>Completar pedido {total}</Text>
               </Button>
             </DrawerFooter>
 
