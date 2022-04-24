@@ -2,8 +2,8 @@ import { Box, Container, Flex, Heading, Icon, IconButton, Input, InputGroup, Inp
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import Image from "next/image";
-import logo from "../../public/image/logo.svg"
-import logoShort from "../../public/image/shortLogo.svg"
+import logo from 'public/image/logo.svg'
+import logoShort from "public/image/shortLogo.svg"
 
 export default function Header() {
 

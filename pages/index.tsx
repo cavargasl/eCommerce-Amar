@@ -14,11 +14,10 @@ import {
   CloseButton,
   StackDivider,
 } from '@chakra-ui/react';
+import Header from 'components/header/Header';
 import type { GetStaticProps, NextPage } from 'next'
+import api from 'product/api';
 import { useMemo, useState } from 'react';
-import Header from '../components/header/Header';
-import api from '../product/api';
-import { Product } from '../product/types';
 
 interface Props {
   products: Product[];
@@ -81,6 +80,7 @@ const Home: NextPage<Props> = ({ products }) => {
         padding={4}
         maxWidth="container.xl"
         borderRadius="md"
+        mb={0}
       >
         <Grid templateColumns="repeat(auto-fit, minmax(min(100%, 20rem), 1fr))" gridAutoFlow={"dense"} gridGap={6}>
           {products.map(product => {

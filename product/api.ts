@@ -1,6 +1,5 @@
 import axios from "axios";
 import Papa from "papaparse";
-import { Product } from "./types";
 
 const formatPrice = (price: number): number => {
   return Number(price.toString().replace(/[^0-9.]+/g, ""))
