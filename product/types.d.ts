@@ -9,3 +9,6 @@ interface Product {
   offert: number,
   verticalImage: boolean,
 }
+interface CartItem extends Product {
+  quantity: number;
+}

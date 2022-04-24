@@ -1,68 +1,40 @@
-import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import {
-  Button, Grid, GridItem, Text, Link, Image, Stack, Heading, Container, Stat, StatNumber, Flex, Badge, Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  HStack,
-  VStack,
-  CloseButton,
-  IconButton,
+  Button, Grid, GridItem, Text, Image, Stack, Heading, Container, Stat, StatNumber, Flex, Badge,
 } from '@chakra-ui/react';
+import CartDrawer from 'components/CartDrawer';
 import Header from 'components/header/Header';
 import type { GetStaticProps, NextPage } from 'next'
 import api from 'product/api';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import { parseCurrency } from 'utils/currency';
 
 interface Props {
   products: Product[];
 }
-interface CartItem extends Product {
-  quuantity: number;
-}
-
-function parseCurrency(value: number): string {
-  return value.toLocaleString('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2
-  })
-}
-
-
 
 const Home: NextPage<Props> = ({ products }) => {
   const [cart, setCart] = useState<CartItem[]>([])
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false)
 
-  const total = useMemo(() => {
-    return parseCurrency(cart.reduce((total, product) => total + (product.price * product.quuantity), 0))
-  }, [cart])
-  const text = useMemo(() => {
-    return cart.reduce((message, product) => message.concat(`* ${product.title} - ${parseCurrency(product.price)}\n`), "").concat(`\nTotal: ${total}`)
-  }, [cart, total])
+  
 
-  function handleRemoveFromCart(index: number): void {
-    setCart((cart) => cart.filter((_, _index) => _index != index))
+  function handleRemoveFromCart(product: Product): void {
+    setCart((cart) => cart.filter((_product) => _product.id != product.id))
   }
 
   function handleEditCart(product: Product, action: 'increment' | 'decrement'): void {
     setCart(cart => {
       const isInCart = cart.some(item => item.id === product.id)
-      if (!isInCart) return cart.concat({ ...product, quuantity: 1 })
+      if (!isInCart) return cart.concat({ ...product, quantity: 1 })
 
       return cart.reduce((acc: Array<CartItem>, _product: CartItem) => {
         if (product.id === _product.id) {
           if (action === 'decrement') {
-            if (_product.quuantity === 1) return acc.concat(_product);
-            return acc.concat({ ..._product, quuantity: _product.quuantity - 1 });
+            if (_product.quantity === 1) return acc.concat(_product);
+            return acc.concat({ ..._product, quantity: _product.quantity - 1 });
           }
           if (action === 'increment') {
-            return acc.concat({ ..._product, quuantity: _product.quuantity + 1 });
+            return acc.concat({ ..._product, quantity: _product.quantity + 1 });
           }
         }
         return acc.concat(_product)
@@ -135,7 +107,7 @@ const Home: NextPage<Props> = ({ products }) => {
                     Ver pedido
                   </Text>
                   <Badge padding={1} colorScheme='primary' fontSize={".8rem"}>
-                    {cart.reduce((acc, product) => acc + product.quuantity, 0)} productos
+                    {cart.reduce((acc, product) => acc + product.quantity, 0)} productos
                   </Badge>
                 </Stack>
               </Stack>
@@ -143,70 +115,14 @@ const Home: NextPage<Props> = ({ products }) => {
 
           </Flex>
         }
-        <Drawer
+        <CartDrawer
           isOpen={isCartOpen}
-          size="sm"
-          placement='right'
           onClose={() => setIsCartOpen(false)}
-        >
-          <DrawerOverlay />
-          <DrawerContent backgroundColor={"white"}>
-            <DrawerCloseButton />
-            <DrawerHeader boxShadow={"base"} >Tu pedido</DrawerHeader>
-
-            <DrawerBody mt={4}>
-              <Stack spacing={6}>
-                {cart.map((product, index) =>
-                  <Stack key={product.id} direction={['column', 'row']} spacing={4} justifyContent="space-between" bg={"primary.50"} p={2} borderRadius="lg">
-                    <Stack height={"70px"} width={{ base: "100%", sm: "100px" }} justifyContent="center">
-                      <Image
-                        objectFit={"cover"}
-                        borderRadius={"lg"}
-                        src={product.image[0]}
-                        alt={product.title}
-                        loading="lazy"
-                        height={"100%"}
-                      />
-                    </Stack>
-                    <VStack width={"100%"} >
-
-                      <HStack width={"100%"} justifyContent={"space-between"}>
-                        <Heading size={"sm"} textTransform="capitalize" >{product.title}</Heading>
-                        <CloseButton color={"primary.600"} onClick={() => handleRemoveFromCart(index)} />
-                      </HStack>
-
-                      <HStack width={"100%"} justifyContent={"space-between"}>
-                        <Stat size={"sm"} >
-                          <StatNumber>{parseCurrency(product.price)}</StatNumber>
-                        </Stat>
-                        <HStack>
-                          <IconButton aria-label='decrement' size={"xs"} colorScheme="primary" variant={"outline"} disabled={product.quuantity === 1} icon={<MinusIcon />} onClick={() => handleEditCart(product, "decrement")} />
-                          <Text paddingInline={2} fontWeight="bold" fontSize={"lg"} color="primary.500">{product.quuantity.toString().padStart(2, "0")}</Text>
-                          <IconButton aria-label='decrement' size={"xs"} colorScheme="primary" icon={<AddIcon />} onClick={() => handleEditCart(product, "increment")} />
-                        </HStack>
-                      </HStack>
-                    </VStack>
-                  </Stack>
-                )}
-              </Stack>
-            </DrawerBody>
-
-            <DrawerFooter >
-              <Button
-                as={Link}
-                href={`https://wa.me/573046263124?text=${encodeURIComponent(text)}`}
-                isExternal
-                size={"lg"}
-                width="100%"
-                colorScheme={"whatsapp"}
-                leftIcon={<Image src='https://icongr.am/fontawesome/whatsapp.svg?size=24&color=ffffff' alt='whatsapp_icon' />}
-              >
-                <Text isTruncated>Completar pedido {total}</Text>
-              </Button>
-            </DrawerFooter>
-
-          </DrawerContent>
-        </Drawer>
+          items={cart}
+          onIncrement={(product) => handleEditCart(product, "increment")}
+          onDecrement={(product) => handleEditCart(product, "decrement")}
+          onRemoveFromCart={(product) => handleRemoveFromCart(product)}
+        />
       </Container>
     </>
   )
