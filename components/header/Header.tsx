@@ -1,4 +1,4 @@
-import { Box, Container, Flex, Heading, Icon, IconButton, Input, InputGroup, InputRightElement, Spacer, Stack, Text, useMediaQuery } from "@chakra-ui/react";
+import { Badge, Box, Container, Flex, IconButton, Input, InputGroup, InputRightElement, Spacer } from "@chakra-ui/react";
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import Image from "next/image";
@@ -50,12 +50,26 @@ export default function Header() {
 
           </Container>
           <Spacer />
-          <IconButton
-            variant={"ghost"}
-            aria-label='shoppingBag'
-            colorScheme={"primary"}
-            icon={<ShoppingBagIcon />}
-          />
+          <Box
+            as="span"
+            position={"relative"}
+            p={1}
+            onClick={() => console.log("click")}
+            _hover={{ bg: "primary.50" }}
+            cursor="pointer"
+            borderRadius={"md"}
+          >
+            <IconButton
+              variant={"ghost"}
+              aria-label='shoppingBag'
+              colorScheme={"primary"}
+              size="100%"
+              icon={<ShoppingBagIcon sx={{ fontSize: "2.2rem" }} />}
+            />
+            <Badge colorScheme={"primary"} borderRadius="full" w={5} h={5} variant="subtle" position={"absolute"} left={"60%"} top={0}>
+              <Box as="p" textAlign={"center"} color="primary.700">3</Box>
+            </Badge>
+          </Box>
         </Flex>
       </Container>
     </Box>
