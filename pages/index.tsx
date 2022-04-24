@@ -7,12 +7,10 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
-  List,
-  ListItem,
   HStack,
   VStack,
   CloseButton,
-  StackDivider,
+  IconButton,
 } from '@chakra-ui/react';
 import Header from 'components/header/Header';
 import type { GetStaticProps, NextPage } from 'next'
@@ -55,16 +53,16 @@ const Home: NextPage<Props> = ({ products }) => {
   function handleEditCart(product: Product, action: 'increment' | 'decrement'): void {
     setCart(cart => {
       const isInCart = cart.some(item => item.id === product.id)
-      if(!isInCart) return cart.concat({ ...product, quuantity: 1 })
+      if (!isInCart) return cart.concat({ ...product, quuantity: 1 })
 
       return cart.reduce((acc: Array<CartItem>, _product: CartItem) => {
-        if(product.id === _product.id) {
-          if(action === 'decrement'){
-            if(_product.quuantity === 1) return acc.concat(_product);
-            return acc.concat({..._product, quuantity: _product.quuantity - 1});
+        if (product.id === _product.id) {
+          if (action === 'decrement') {
+            if (_product.quuantity === 1) return acc.concat(_product);
+            return acc.concat({ ..._product, quuantity: _product.quuantity - 1 });
           }
-          if(action === 'increment'){
-            return acc.concat({..._product, quuantity: _product.quuantity + 1});
+          if (action === 'increment') {
+            return acc.concat({ ..._product, quuantity: _product.quuantity + 1 });
           }
         }
         return acc.concat(_product)
@@ -78,7 +76,7 @@ const Home: NextPage<Props> = ({ products }) => {
       <Container
         marginY={4}
         padding={4}
-        maxWidth="container.xl"
+        maxW={{ sm: "container.sm", md: "container.md", lg: "container.lg", xl: "container.xl", '2xl': "container.2xl" }}
         borderRadius="md"
         mb={0}
       >
@@ -105,13 +103,13 @@ const Home: NextPage<Props> = ({ products }) => {
                   />
                   <Heading size={"md"} isTruncated textTransform={"capitalize"} >{product.title}</Heading>
                   <Stack direction={["column", "row"]} spacing={2} justifyContent="space-between" alignItems="center">
-                    <Stat size={"sm"} width={{base: "100%", sm: "min-content" }} >
+                    <Stat size={"sm"} width={{ base: "100%", sm: "min-content" }} >
                       <StatNumber>{parseCurrency(product.price)}</StatNumber>
                     </Stat>
                     <Button
                       variant={"outline"}
                       borderRadius={"lg"}
-                      width={{base: "100%", sm: "min-content"}}
+                      width={{ base: "100%", sm: "min-content" }}
                       colorScheme={"primary"}
                       onClick={() => handleEditCart(product, 'increment')}
                     >
@@ -137,7 +135,7 @@ const Home: NextPage<Props> = ({ products }) => {
                     Ver pedido
                   </Text>
                   <Badge padding={1} colorScheme='primary' fontSize={".8rem"}>
-                    {cart.reduce((acc, product) => acc + product.quuantity ,0)} productos
+                    {cart.reduce((acc, product) => acc + product.quuantity, 0)} productos
                   </Badge>
                 </Stack>
               </Stack>
@@ -152,42 +150,42 @@ const Home: NextPage<Props> = ({ products }) => {
           onClose={() => setIsCartOpen(false)}
         >
           <DrawerOverlay />
-          <DrawerContent backgroundColor={"primary.50"}>
+          <DrawerContent backgroundColor={"white"}>
             <DrawerCloseButton />
             <DrawerHeader boxShadow={"base"} >Tu pedido</DrawerHeader>
 
             <DrawerBody mt={4}>
-              <Stack divider={<StackDivider borderColor='primary.100' />} spacing={6}>
+              <Stack spacing={6}>
                 {cart.map((product, index) =>
-                  <Stack key={product.id} direction={['column', 'row']} spacing={4} justifyContent="space-between">
-                      <Stack height={"70px"} width={{base: "100%", sm: "100px"}} justifyContent="center">
-                        <Image
-                          objectFit={"cover"}
-                          borderRadius={"lg"}
-                          src={product.image[0]}
-                          alt={product.title}
-                          loading="lazy"
-                          height={"100%"}
-                        />
-                      </Stack>
-                      <VStack width={"100%"} >
+                  <Stack key={product.id} direction={['column', 'row']} spacing={4} justifyContent="space-between" bg={"primary.50"} p={2} borderRadius="lg">
+                    <Stack height={"70px"} width={{ base: "100%", sm: "100px" }} justifyContent="center">
+                      <Image
+                        objectFit={"cover"}
+                        borderRadius={"lg"}
+                        src={product.image[0]}
+                        alt={product.title}
+                        loading="lazy"
+                        height={"100%"}
+                      />
+                    </Stack>
+                    <VStack width={"100%"} >
 
-                        <HStack width={"100%"} justifyContent={"space-between"}>
-                          <Heading size={"sm"} textTransform="capitalize" >{product.title}</Heading>
-                          <CloseButton color={"primary.600"} onClick={() => handleRemoveFromCart(index)} />
-                        </HStack>
+                      <HStack width={"100%"} justifyContent={"space-between"}>
+                        <Heading size={"sm"} textTransform="capitalize" >{product.title}</Heading>
+                        <CloseButton color={"primary.600"} onClick={() => handleRemoveFromCart(index)} />
+                      </HStack>
 
-                        <HStack width={"100%"} justifyContent={"space-between"}>
-                          <Stat size={"sm"} >
-                            <StatNumber>{parseCurrency(product.price)}</StatNumber>
-                          </Stat>
-                          <HStack>
-                            <Button size={"xs"} colorScheme="primary" variant={"outline"} disabled={product.quuantity === 1} onClick={() => handleEditCart(product, "decrement")}><MinusIcon w={3} /></Button>
-                            <Text paddingInline={2} fontWeight="bold" fontSize={"lg"} color="primary.500">{product.quuantity.toString().padStart(2, "0")}</Text>
-                            <Button size={"xs"} colorScheme="primary" onClick={() => handleEditCart(product, "increment")}><AddIcon w={3} /></Button>
-                          </HStack>
+                      <HStack width={"100%"} justifyContent={"space-between"}>
+                        <Stat size={"sm"} >
+                          <StatNumber>{parseCurrency(product.price)}</StatNumber>
+                        </Stat>
+                        <HStack>
+                          <IconButton aria-label='decrement' size={"xs"} colorScheme="primary" variant={"outline"} disabled={product.quuantity === 1} icon={<MinusIcon />} onClick={() => handleEditCart(product, "decrement")} />
+                          <Text paddingInline={2} fontWeight="bold" fontSize={"lg"} color="primary.500">{product.quuantity.toString().padStart(2, "0")}</Text>
+                          <IconButton aria-label='decrement' size={"xs"} colorScheme="primary" icon={<AddIcon />} onClick={() => handleEditCart(product, "increment")} />
                         </HStack>
-                      </VStack>
+                      </HStack>
+                    </VStack>
                   </Stack>
                 )}
               </Stack>

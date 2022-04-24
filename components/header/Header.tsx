@@ -8,8 +8,8 @@ import logoShort from "public/image/shortLogo.svg"
 export default function Header() {
 
   return (
-    <Box backgroundColor={"white"} w="100%" p={4} color="text" boxShadow={"base"} position="sticky" top={0} zIndex="1000">
-      <Container maxWidth="container.xl" >
+    <Box backgroundColor={"white"} w="100%" py={4} color="text" boxShadow={"base"} position="sticky" top={0} zIndex="1000">
+      <Container maxW={{ sm: "container.sm", md: "container.md", lg: "container.lg", xl: "container.xl", '2xl': "container.2xl" }} >
         <Flex alignItems={"center"}>
           <Box height="40px" width={"200px"}
             sx={{
@@ -39,7 +39,7 @@ export default function Header() {
               <Input placeholder='Buscar producto' />
               <InputRightElement pointerEvents={"none"}>
                 <IconButton
-                color={"gray.400"}
+                  color={"gray.400"}
                   backgroundColor={"transparent"}
                   borderLeftRadius="0"
                   aria-label='Search product'
