@@ -1,6 +1,8 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
+import { Provider } from 'react-redux'
+import store from 'redux/store'
 import theme from 'styles/theme'
 
 
@@ -14,9 +16,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta content="Camilo" name="author" />
         <meta content="Camilo Vargas" name="copyright" />
       </Head>
-      <ChakraProvider theme={theme}>
-        <Component {...pageProps} />
-      </ChakraProvider>
+      <Provider store={store}>
+        <ChakraProvider theme={theme}>
+          <Component {...pageProps} />
+        </ChakraProvider>
+      </Provider>
     </>
   )
 }

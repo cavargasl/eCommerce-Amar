@@ -130,7 +130,6 @@ const Home: NextPage<Props> = ({ products }) => {
 
 export const getStaticProps: GetStaticProps = async () => {
   const products = await api.list();
-
   return {
     props: {
       products
