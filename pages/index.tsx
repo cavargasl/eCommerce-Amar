@@ -6,17 +6,19 @@ import Header from 'components/header/Header';
 import type { GetStaticProps, NextPage } from 'next'
 import api from 'product/api';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { selectProducts, setProductsList } from 'redux/slices/products';
+import { wrapper } from 'redux/store';
 import { parseCurrency } from 'utils/currency';
 
 interface Props {
   products: Product[];
 }
 
-const Home: NextPage<Props> = ({ products }) => {
-  const [cart, setCart] = useState<CartItem[]>([])
+const Home: NextPage<Props> = () => {
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false)
-
-  
+  const [cart, setCart] = useState<CartItem[]>([])
+  const products = useSelector(selectProducts)
 
   function handleRemoveFromCart(product: Product): void {
     setCart((cart) => cart.filter((_product) => _product.id != product.id))
@@ -53,7 +55,7 @@ const Home: NextPage<Props> = ({ products }) => {
         mb={0}
       >
         <Grid templateColumns="repeat(auto-fit, minmax(min(100%, 20rem), 1fr))" gridAutoFlow={"dense"} gridGap={6}>
-          {products.map(product => {
+          {products?.map(product => {
             return (
               <GridItem
                 height={"min-content"}
@@ -128,15 +130,15 @@ const Home: NextPage<Props> = ({ products }) => {
   )
 }
 
-export const getStaticProps: GetStaticProps = async () => {
-  const products = await api.list();
-  return {
-    props: {
-      products
-    },
-    // revalida la informacion de los productos del excel en segundos
-    revalidate: 604800
+export const getStaticProps: GetStaticProps = wrapper.getStaticProps(
+  (store) => async () => {
+    const products = await api.list();
+    store.dispatch(setProductsList(products))
+    return {
+      props: {},
+      revalidate: 604800
+    }
   }
-}
+)
 
 export default Home

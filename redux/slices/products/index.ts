@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { HYDRATE } from "next-redux-wrapper";
 import type { RootState } from "redux/store";
 
 const initialState = {
@@ -10,7 +11,14 @@ export const productsSlice = createSlice({
   initialState,
   reducers: {
     setProductsList: (state, action: PayloadAction<Product[]>) => {
-      state.data = [...state.data, ...action.payload]
+      state.data = action.payload
+    }
+  },
+  extraReducers: {
+    [HYDRATE]: (state, action) => {
+      if (action?.payload) {
+        state.data = action.payload.products.data
+      }
     }
   }
 })
