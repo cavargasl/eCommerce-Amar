@@ -6,7 +6,8 @@ import Header from 'components/header/Header';
 import type { GetStaticProps, NextPage } from 'next'
 import api from 'product/api';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart, selectCart } from 'redux/slices/cart';
 import { selectProducts, setProductsList } from 'redux/slices/products';
 import { wrapper } from 'redux/store';
 import { parseCurrency } from 'utils/currency';
@@ -17,32 +18,9 @@ interface Props {
 
 const Home: NextPage<Props> = () => {
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false)
-  const [cart, setCart] = useState<CartItem[]>([])
   const products = useSelector(selectProducts)
-
-  function handleRemoveFromCart(product: Product): void {
-    setCart((cart) => cart.filter((_product) => _product.id != product.id))
-  }
-
-  function handleEditCart(product: Product, action: 'increment' | 'decrement'): void {
-    setCart(cart => {
-      const isInCart = cart.some(item => item.id === product.id)
-      if (!isInCart) return cart.concat({ ...product, quantity: 1 })
-
-      return cart.reduce((acc: Array<CartItem>, _product: CartItem) => {
-        if (product.id === _product.id) {
-          if (action === 'decrement') {
-            if (_product.quantity === 1) return acc.concat(_product);
-            return acc.concat({ ..._product, quantity: _product.quantity - 1 });
-          }
-          if (action === 'increment') {
-            return acc.concat({ ..._product, quantity: _product.quantity + 1 });
-          }
-        }
-        return acc.concat(_product)
-      }, [])
-    })
-  }
+  const listCart = useSelector(selectCart)
+  const dispatch = useDispatch()
 
   return (
     <>
@@ -85,7 +63,7 @@ const Home: NextPage<Props> = () => {
                       borderRadius={"lg"}
                       width={{ base: "100%", sm: "min-content" }}
                       colorScheme={"primary"}
-                      onClick={() => handleEditCart(product, 'increment')}
+                      onClick={() => dispatch(addToCart(product))}
                     >
                       Añadir a la bolsa
                     </Button>
@@ -94,7 +72,7 @@ const Home: NextPage<Props> = () => {
               </GridItem>)
           })}
         </Grid>
-        {Boolean(cart.length) &&
+        {Boolean(listCart.amountAll > 0) &&
           <Flex alignItems="center" bottom={4} mt={6} justifyContent="center" position="sticky">
             <Button
               boxShadow="xl"
@@ -109,7 +87,7 @@ const Home: NextPage<Props> = () => {
                     Ver pedido
                   </Text>
                   <Badge padding={1} colorScheme='primary' fontSize={".8rem"}>
-                    {cart.reduce((acc, product) => acc + product.quantity, 0)} productos
+                    {listCart.amountAll} productos
                   </Badge>
                 </Stack>
               </Stack>
@@ -120,10 +98,7 @@ const Home: NextPage<Props> = () => {
         <CartDrawer
           isOpen={isCartOpen}
           onClose={() => setIsCartOpen(false)}
-          items={cart}
-          onIncrement={(product) => handleEditCart(product, "increment")}
-          onDecrement={(product) => handleEditCart(product, "decrement")}
-          onRemoveFromCart={(product) => handleRemoveFromCart(product)}
+          listCart={listCart.items}
         />
       </Container>
     </>

@@ -1,31 +1,30 @@
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { Button, CloseButton, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerProps, Heading, HStack, IconButton, Image, Link, Stack, Stat, StatNumber, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useMemo } from "react";
+import { useDispatch } from "react-redux";
+import { addToCart, decrementToCart, removeToCart } from "redux/slices/cart";
 import { parseCurrency } from "utils/currency";
 
 interface Props extends Omit<DrawerProps, "children"> {
-  items: CartItem[];
-  onIncrement: (product: Product) => void;
-  onDecrement: (product: Product) => void;
-  onRemoveFromCart: (product: Product) => void;
+  listCart: CartItem[];
 }
 
-const CartDrawer: React.FC<Props> = ({ items, onClose, onIncrement, onDecrement, onRemoveFromCart, ...props }) => {
-
+const CartDrawer: React.FC<Props> = ({ listCart, onClose, ...props }) => {
+  const dispatch = useDispatch()
   const total = useMemo(() => {
-    return parseCurrency(items.reduce((total, product) => total + (product.price * product.quantity), 0))
-  }, [items])
+    return parseCurrency(listCart.reduce((total, product) => total + (product.price * product.quantity), 0))
+  }, [listCart])
 
   const text = useMemo(() => {
-    return items.reduce((message, product) => message.concat(`* ${product.title}${product.quantity > 1 ? ` X(${product.quantity})` : ""} - ${parseCurrency(product.price * product.quantity)}\n`), "").concat(`\nTotal: ${total}`)
-  }, [items, total])
+    return listCart.reduce((message, product) => message.concat(`* ${product.title}${product.quantity > 1 ? ` X(${product.quantity})` : ""} - ${parseCurrency(product.price * product.quantity)}\n`), "").concat(`\nTotal: ${total}`)
+  }, [listCart, total])
 
   useEffect(() => {
-    if (!items.length) {
+    if (!listCart.length) {
       onClose()
     }
 
-  }, [items.length, onClose])
+  }, [listCart.length, onClose])
 
   return (
     <Drawer
@@ -41,9 +40,9 @@ const CartDrawer: React.FC<Props> = ({ items, onClose, onIncrement, onDecrement,
 
         <DrawerBody mt={4}>
           <Stack spacing={6}>
-            {items.map((product, index) =>
+            {listCart.map((product, index) =>
               <Stack key={product.id} direction={['column', 'row']} spacing={4} justifyContent="space-between" bg={"primary.50"} p={2} borderRadius="lg">
-                <Stack height={"70px"} width={{ base: "100%", sm: "100px" }} justifyContent="center">
+                <Stack height={["100px", "70px"]} width={{ base: "100%", sm: "100px" }} justifyContent="center">
                   <Image
                     objectFit={"cover"}
                     borderRadius={"lg"}
@@ -57,7 +56,7 @@ const CartDrawer: React.FC<Props> = ({ items, onClose, onIncrement, onDecrement,
 
                   <HStack width={"100%"} justifyContent={"space-between"}>
                     <Heading size={"sm"} textTransform="capitalize" >{product.title}</Heading>
-                    <CloseButton color={"primary.600"} onClick={() => onRemoveFromCart(product)} />
+                    <CloseButton color={"primary.600"} onClick={() => dispatch(removeToCart(listCart[index]))} />
                   </HStack>
 
                   <HStack width={"100%"} justifyContent={"space-between"}>
@@ -65,9 +64,9 @@ const CartDrawer: React.FC<Props> = ({ items, onClose, onIncrement, onDecrement,
                       <StatNumber>{parseCurrency(product.price)}</StatNumber>
                     </Stat>
                     <HStack>
-                      <IconButton aria-label='decrement' size={"xs"} colorScheme="primary" variant={"outline"} disabled={product.quantity === 1} icon={<MinusIcon />} onClick={() => onDecrement(product)} />
+                      <IconButton aria-label='decrement' size={"xs"} colorScheme="primary" variant={"outline"} disabled={product.quantity === 1} icon={<MinusIcon />} onClick={() => dispatch(decrementToCart(listCart[index]))} />
                       <Text paddingInline={2} fontWeight="bold" fontSize={"lg"} color="primary.500">{product.quantity.toString().padStart(2, "0")}</Text>
-                      <IconButton aria-label='decrement' size={"xs"} colorScheme="primary" icon={<AddIcon />} onClick={() => onIncrement(product)} />
+                      <IconButton aria-label='decrement' size={"xs"} colorScheme="primary" icon={<AddIcon />} onClick={() => dispatch(addToCart(product))} />
                     </HStack>
                   </HStack>
                 </VStack>
