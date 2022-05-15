@@ -4,8 +4,20 @@ import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import Image from "next/image";
 import logo from 'public/image/logo.svg'
 import logoShort from "public/image/shortLogo.svg"
+import React from "react";
+import { useSelector } from "react-redux";
+import { selectCart } from "redux/slices/cart";
 
-export default function Header() {
+interface Props {
+  setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>,
+}
+
+const Header: React.FC<Props> = ({setIsCartOpen}) => {
+  const listCart = useSelector(selectCart)
+
+  function handleOpenCart(){
+    if(listCart.amountAll) return setIsCartOpen(e => !e)
+  }
 
   return (
     <Box backgroundColor={"white"} w="100%" py={4} color="text" boxShadow={"base"} position="sticky" top={0} zIndex="1000">
@@ -54,7 +66,7 @@ export default function Header() {
             as="span"
             position={"relative"}
             p={1}
-            onClick={() => console.log("click")}
+            onClick={() => handleOpenCart()}
             _hover={{ bg: "primary.50" }}
             cursor="pointer"
             borderRadius={"md"}
@@ -66,12 +78,16 @@ export default function Header() {
               size="100%"
               icon={<ShoppingBagIcon sx={{ fontSize: "2.2rem" }} />}
             />
-            <Badge colorScheme={"primary"} borderRadius="full" w={5} h={5} variant="subtle" position={"absolute"} left={"60%"} top={0}>
-              <Box as="p" textAlign={"center"} color="primary.700">3</Box>
-            </Badge>
+            {Boolean(listCart.amountAll) &&
+              <Badge colorScheme={"primary"} borderRadius="full" w={5} h={5} variant="subtle" position={"absolute"} left={"60%"} top={0}>
+                <Box as="p" textAlign={"center"} color="primary.700">{listCart.amountAll}</Box>
+              </Badge>
+            }
           </Box>
         </Flex>
       </Container>
     </Box>
   )
 }
+
+export default Header
