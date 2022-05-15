@@ -3,6 +3,7 @@ import {
 } from '@chakra-ui/react';
 import CartDrawer from 'components/CartDrawer';
 import Header from 'components/header/Header';
+import { AnimatePresence, motion } from 'framer-motion';
 import type { GetStaticProps, NextPage } from 'next'
 import api from 'product/api';
 import { useState } from 'react';
@@ -18,13 +19,20 @@ interface Props {
 
 const Home: NextPage<Props> = () => {
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false)
+  const [viewButton, setViewButton] = useState<boolean>(false)
   const products = useSelector(selectProducts)
   const listCart = useSelector(selectCart)
   const dispatch = useDispatch()
 
+  function handleAddCart(product: Product) {
+    dispatch(addToCart(product))
+    setViewButton(true)
+    setTimeout(() => setViewButton(false), 2000)
+  }
+
   return (
     <>
-      <Header />
+      <Header setIsCartOpen={setIsCartOpen} />
       <Container
         marginY={4}
         padding={4}
@@ -63,7 +71,7 @@ const Home: NextPage<Props> = () => {
                       borderRadius={"lg"}
                       width={{ base: "100%", sm: "min-content" }}
                       colorScheme={"primary"}
-                      onClick={() => dispatch(addToCart(product))}
+                      onClick={() => handleAddCart(product)}
                     >
                       Añadir a la bolsa
                     </Button>
@@ -72,29 +80,41 @@ const Home: NextPage<Props> = () => {
               </GridItem>)
           })}
         </Grid>
-        {Boolean(listCart.amountAll > 0) &&
-          <Flex alignItems="center" bottom={4} mt={6} justifyContent="center" position="sticky">
-            <Button
-              boxShadow="xl"
-              colorScheme="primary"
-              size="lg"
-              width={{ base: "100%", sm: "fit-content" }}
-              onClick={() => setIsCartOpen(true)}
+        <AnimatePresence>
+          {viewButton &&
+            <Flex
+              as={motion.div}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+              w="fit-content"
+              marginInline={"auto"}
+              alignItems="center"
+              bottom={4} mt={6}
+              justifyContent="center"
+              position="sticky"
             >
-              <Stack alignItems="center" direction="row" spacing={6}>
-                <Stack alignItems="center" direction="row" spacing={3}>
-                  <Text fontSize="md" lineHeight={6}>
-                    Ver pedido
-                  </Text>
-                  <Badge padding={1} colorScheme='primary' fontSize={".8rem"}>
-                    {listCart.amountAll} productos
-                  </Badge>
+              <Button
+                boxShadow="xl"
+                colorScheme="primary"
+                size="lg"
+                width={{ base: "100%", sm: "fit-content" }}
+                onClick={() => setIsCartOpen(true)}
+              >
+                <Stack alignItems="center" direction="row" spacing={6}>
+                  <Stack alignItems="center" direction="row" spacing={3}>
+                    <Text fontSize="md" lineHeight={6}>
+                      Ver pedido
+                    </Text>
+                    <Badge padding={1} colorScheme='primary' fontSize={".8rem"}>
+                      {listCart.amountAll} productos
+                    </Badge>
+                  </Stack>
                 </Stack>
-              </Stack>
-            </Button>
-
-          </Flex>
-        }
+              </Button>
+            </Flex>
+          }
+        </AnimatePresence>
         <CartDrawer
           isOpen={isCartOpen}
           onClose={() => setIsCartOpen(false)}
