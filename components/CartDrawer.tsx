@@ -42,7 +42,7 @@ const CartDrawer: React.FC<Props> = ({ listCart, onClose, ...props }) => {
           <Stack spacing={6}>
             {listCart.map((product, index) =>
               <Stack key={product.id} direction={['column', 'row']} spacing={4} justifyContent="space-between" bg={"primary.50"} p={2} borderRadius="lg">
-                <Stack height={["100px", "70px"]} width={{ base: "100%", sm: "100px" }} justifyContent="center">
+                <Stack height={["150px", "70px"]} width={{ base: "100%", sm: "100px" }} justifyContent="center">
                   <Image
                     objectFit={"cover"}
                     borderRadius={"lg"}
