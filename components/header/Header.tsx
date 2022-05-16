@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 import { selectCart } from "redux/slices/cart";
 import Search from "./Search";
+import { selectFilter } from "redux/slices/filter";
 
 interface Props {
   setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>,
@@ -14,6 +15,7 @@ interface Props {
 
 const Header: React.FC<Props> = ({ setIsCartOpen }) => {
   const listCart = useSelector(selectCart)
+  const filter = useSelector(selectFilter)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   function handleOpenCart() {
@@ -36,8 +38,9 @@ const Header: React.FC<Props> = ({ setIsCartOpen }) => {
               display={["inherit", "none"]}
               aria-label='Buscar'
               icon={<SearchIcon />}
-              color={"gray.500"}
-              backgroundColor="gray.100"
+              color={filter.word.length > 0 ? "primary.600" : "gray.600"}
+              backgroundColor={filter.word.length > 0 ? "primary.100" : "gray.100"}
+              _hover={{bgColor: "primary.200"}}
               onClick={onOpen}
             />
             <Modal isOpen={isOpen} onClose={onClose}>
