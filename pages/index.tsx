@@ -1,5 +1,5 @@
 import {
-  Button, Grid, GridItem, Text, Image, Stack, Heading, Container, Stat, StatNumber, Flex, Badge,
+  Button, Grid, GridItem, Text, Image, Stack, Heading, Container, Stat, StatNumber, Flex, Badge, Box,
 } from '@chakra-ui/react';
 import CartDrawer from 'components/CartDrawer';
 import Header from 'components/header/Header';
@@ -25,12 +25,12 @@ const Home: NextPage = () => {
   const [productsFilter, setProductsFilter] = useState<Product[]>(products)
   useEffect(() => {
     let result = products.filter(item => {
-      if(item.title.toLocaleLowerCase().includes(filter.word)) return item
-      if(item.description.toLocaleLowerCase().includes(filter.word)) return item
+      if (item.title.toLocaleLowerCase().includes(filter.word)) return item
+      if (item.description.toLocaleLowerCase().includes(filter.word)) return item
     })
     setProductsFilter(result)
   }, [filter.word, products])
-  
+
   function handleAddCart(product: Product) {
     dispatch(addToCart(product))
     setViewButton(true)
@@ -68,7 +68,13 @@ const Home: NextPage = () => {
                     loading="lazy"
                     height={"100%"}
                   />
-                  <Heading size={"md"} isTruncated textTransform={"capitalize"} >{product.title}</Heading>
+                  <Box>
+                    <Heading size={"md"} isTruncated textTransform={"capitalize"} >{product.title}</Heading>
+                    {
+                      product.description.length > 0 &&
+                      <Text color={"gray.500"}>{product.description}</Text>
+                    }
+                  </Box>
                   <Stack direction={["column", "row"]} spacing={2} justifyContent="space-between" alignItems="center">
                     <Stat size={"sm"} width={{ base: "100%", sm: "min-content" }} >
                       <StatNumber>{parseCurrency(product.price)}</StatNumber>
