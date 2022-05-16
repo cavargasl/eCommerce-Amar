@@ -6,24 +6,31 @@ import Header from 'components/header/Header';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { GetStaticProps, NextPage } from 'next'
 import api from 'product/api';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, selectCart } from 'redux/slices/cart';
+import { selectFilter } from 'redux/slices/filter';
 import { selectProducts, setProductsList } from 'redux/slices/products';
 import { wrapper } from 'redux/store';
 import { parseCurrency } from 'utils/currency';
 
-interface Props {
-  products: Product[];
-}
-
-const Home: NextPage<Props> = () => {
+const Home: NextPage = () => {
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false)
   const [viewButton, setViewButton] = useState<boolean>(false)
   const products = useSelector(selectProducts)
   const listCart = useSelector(selectCart)
+  const filter = useSelector(selectFilter)
   const dispatch = useDispatch()
 
+  const [productsFilter, setProductsFilter] = useState<Product[]>(products)
+  useEffect(() => {
+    let result = products.filter(item => {
+      if(item.title.toLocaleLowerCase().includes(filter.word)) return item
+      if(item.description.toLocaleLowerCase().includes(filter.word)) return item
+    })
+    setProductsFilter(result)
+  }, [filter.word, products])
+  
   function handleAddCart(product: Product) {
     dispatch(addToCart(product))
     setViewButton(true)
@@ -41,7 +48,7 @@ const Home: NextPage<Props> = () => {
         mb={0}
       >
         <Grid templateColumns="repeat(auto-fit, minmax(min(100%, 20rem), 1fr))" gridAutoFlow={"dense"} gridGap={6}>
-          {products?.map(product => {
+          {productsFilter.length ? productsFilter.map(product => {
             return (
               <GridItem
                 height={"min-content"}
@@ -78,7 +85,10 @@ const Home: NextPage<Props> = () => {
                   </Stack>
                 </Stack>
               </GridItem>)
-          })}
+          })
+            :
+            <Heading as="h4" textAlign={"center"}>Sin resultado</Heading>
+          }
         </Grid>
         <AnimatePresence>
           {viewButton &&
