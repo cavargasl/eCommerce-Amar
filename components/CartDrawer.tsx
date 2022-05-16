@@ -78,7 +78,7 @@ const CartDrawer: React.FC<Props> = ({ listCart, onClose, ...props }) => {
         <DrawerFooter >
           <Button
             as={Link}
-            href={`https://wa.me/573046263124?text=${encodeURIComponent(text)}`}
+            href={`https://wa.me/573012409597?text=${encodeURIComponent(text)}`}
             isExternal
             size={"lg"}
             width="100%"
