@@ -31,7 +31,7 @@ const Header: React.FC<Props> = ({ setIsCartOpen }) => {
           </Link>
           <Spacer />
           <Container maxW={"md"} display="flex" justifyContent={"flex-end"}>
-            <Search />
+            <Search onClose={onClose} />
             <IconButton
               display={["inherit", "none"]}
               aria-label='Buscar'
@@ -42,9 +42,9 @@ const Header: React.FC<Props> = ({ setIsCartOpen }) => {
             />
             <Modal isOpen={isOpen} onClose={onClose}>
               <ModalOverlay />
-              <ModalContent backgroundColor="transparent">
+              <ModalContent backgroundColor="transparent" boxShadow={"none"}>
                 <ModalBody>
-                  <Search isModal />
+                  <Search isModal onClose={onClose} />
                 </ModalBody>
               </ModalContent>
             </Modal>
